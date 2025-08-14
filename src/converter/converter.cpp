@@ -1,6 +1,6 @@
 /********************************************
  * Copyright (c) 2025 Shun/翔海 (@shun4midx) *
- * Project: FQ-HLL-Bot                      *
+ * Project: Shun4miShu                      *
  * File Type: C++ file                      *
  * File: converter.cpp                      *
  ****************************************** */
