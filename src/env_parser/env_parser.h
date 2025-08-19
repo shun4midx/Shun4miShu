@@ -5,6 +5,8 @@
  * File: env_parser.h                       *
  ****************************************** */
 
+#pragma once
+
 // ======== INCLUDE ======== //
 #include <fstream>
 #include <string>

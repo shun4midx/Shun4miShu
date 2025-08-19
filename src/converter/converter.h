@@ -5,6 +5,8 @@
  * File: converter.h                        *
  ****************************************** */
 
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -102,7 +104,7 @@ static std::unordered_map<std::string, std::string> ZHUYIN_VOWELS = {
     
     // Combinations
     {"ㄨㄥ", "ong"}, {"ㄧㄚ", "ia"}, {"ㄧㄠ", "iao"}, {"ㄧㄝ", "ie"}, {"ㄧㄡ", "iu"}, {"ㄧㄢ", "ian"}, {"ㄧㄣ", "in"}, {"ㄧㄤ", "iang"}, {"ㄧㄥ", "ing"}, {"ㄩㄥ", "iong"}, 
-    {"ㄨㄚ", "ua"}, {"ㄨㄛ", "uo"}, {"ㄨㄞ", "uai"}, {"ㄨㄟ", "ui"}, {"ㄨㄢ", "uan"}, {"ㄨㄣ", "un"}, {"ㄨㄤ", "uang"}, {"ㄩㄝ", "ue"}, {"ㄩㄢ", "uan"}
+    {"ㄨㄚ", "ua"}, {"ㄨㄛ", "uo"}, {"ㄨㄞ", "uai"}, {"ㄨㄟ", "ui"}, {"ㄨㄢ", "uan"}, {"ㄨㄣ", "un"}, {"ㄨㄤ", "uang"}, {"ㄩㄝ", "ue"}, {"ㄩㄢ", "uan"}, {"ㄩㄣ", "un"}
 };
 
 static std::unordered_map<std::string, std::string> ZHUYIN_BEGINNING_VOWELS = {
@@ -115,6 +117,7 @@ static std::unordered_map<std::string, std::string> ZHUYIN_BEGINNING_VOWELS = {
 std::vector<std::string> split_utf8(const std::string& str);
 std::vector<std::string> split_zhuyin(const std::string& str);
 std::vector<std::string> split_alphanumeric(const std::string& str);
+std::vector<std::string> split_zhuyin_qwerty(const std::string& str);
 std::string merge(const std::vector<std::string> vec, const std::string& str);
 
 // ======== CONVERTERS ======== //

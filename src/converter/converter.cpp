@@ -69,6 +69,27 @@ std::vector<std::string> split_alphanumeric(const std::string& str) {
     return words;
 }
 
+std::vector<std::string> split_zhuyin_qwerty(const std::string& str) {
+    std::unordered_set<char> delims = {' ', '3', '4', '6', '7'};
+    std::vector<std::string> result;
+
+    std::string current;
+    for (char c : str) {
+        current.push_back(c);
+        
+        if (delims.count(c)) {
+            result.push_back(current);
+            current.clear();
+        }
+    }
+
+    if (!current.empty()) {
+        result.push_back(current);
+    }
+
+    return result;
+}
+
 std::string merge(const std::vector<std::string> vec, const std::string& str) {
     std::string output = "";
 
@@ -189,6 +210,11 @@ std::vector<std::string> pinyin_to_zhuyin(const std::vector<std::string>& parsed
         for (auto &kv : ZHUYIN_ONLY_CONSONANTS) {
             SPECIAL_PINYIN_TO_ZHUYIN[kv.second] = kv.first;
         }
+
+        PINYIN_TO_ZHUYIN_FINALS["v"] = "ㄩ";
+        PINYIN_TO_ZHUYIN_FINALS["vn"] = u8"ㄩㄣ";
+        PINYIN_TO_ZHUYIN_FINALS["ve"] = u8"ㄩㄝ";
+        PINYIN_TO_ZHUYIN_FINALS["van"] = u8"ㄩㄢ";
     }
 
     std::vector<std::string> output;
@@ -227,19 +253,40 @@ std::vector<std::string> pinyin_to_zhuyin(const std::vector<std::string>& parsed
         }
 
         // Try longest matching initial
-        std::string matched_init = "";
+        std::string matched_init_py = "";
+        std::string matched_init_zy = "";
         for (int len = std::min((int)lower.size(), 2); len >= 1; --len) {
             std::string try_init = lower.substr(0, len);
-            if (PINYIN_TO_ZHUYIN_INITIALS.count(try_init)) {
-                matched_init = PINYIN_TO_ZHUYIN_INITIALS[try_init];
+            auto it = PINYIN_TO_ZHUYIN_INITIALS.find(try_init);
+            if (it != PINYIN_TO_ZHUYIN_INITIALS.end()) {
+                matched_init_py = try_init;
+                matched_init_zy = it->second;
                 lower.erase(0, len);
                 break;
             }
         }
-        zhuyin += matched_init;
+        zhuyin += matched_init_zy;
+
+        auto is_jqxy = [](const std::string& s){
+            return s == "j" || s == "q" || s == "x" || s == "y";
+        };
+    
+        std::string matched_final = "";
+    
+        if (is_jqxy(matched_init_py) && !lower.empty()) {
+            // Special: j/q/x + iong => ㄩㄥ
+            if (lower.rfind("uan", 0) == 0) {
+                lower.replace(0, 3, "van");
+            } else if (lower.rfind("ue",  0) == 0) {
+                lower.replace(0, 2, "ve");
+            } else if (lower.rfind("un",  0) == 0) {
+                lower.replace(0, 2, "vn");
+            } else if (lower[0] == 'u') {
+                lower[0] = 'v';
+            }
+        }
 
         // Try longest matching final
-        std::string matched_final = "";
         for (int len = std::min((int)lower.size(), 4); len >= 1; --len) {
             std::string try_final = lower.substr(0, len);
             if (PINYIN_TO_ZHUYIN_FINALS.count(try_final)) {
@@ -251,7 +298,7 @@ std::vector<std::string> pinyin_to_zhuyin(const std::vector<std::string>& parsed
         zhuyin += matched_final;
 
         // Other symbols
-        if (matched_init.empty() && matched_final.empty()) {
+        if (matched_init_zy.empty() && matched_final.empty()) {
             output.push_back(parsed[i]);
             continue;
         }
@@ -311,8 +358,13 @@ std::vector<std::string> zhuyin_to_pinyin(const std::vector<std::string>& parsed
         } else if (parsed_zhuyin.size() == 3) { // CV or CVC
             if (ZHUYIN_ENDING_CONSONANTS.find(parsed_zhuyin[2]) != ZHUYIN_ENDING_CONSONANTS.end()) { // CVC
                 pinyin += ZHUYIN_BEGINNING_CONSONANTS[parsed_zhuyin[0]];
-                pinyin += ZHUYIN_VOWELS[parsed_zhuyin[1]];
-                pinyin += ZHUYIN_ENDING_CONSONANTS[parsed_zhuyin[2]];
+
+                if (parsed_zhuyin[1] == "ㄩ" && parsed_zhuyin[2] == "ㄣ") { // vn exception
+                    pinyin += "un";
+                } else {
+                    pinyin += ZHUYIN_VOWELS[parsed_zhuyin[1]];
+                    pinyin += ZHUYIN_ENDING_CONSONANTS[parsed_zhuyin[2]];
+                }
             } else { // CV
                 pinyin += ZHUYIN_BEGINNING_CONSONANTS[parsed_zhuyin[0]];
                 pinyin += ZHUYIN_VOWELS[parsed_zhuyin[1] + parsed_zhuyin[2]];
