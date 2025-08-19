@@ -109,10 +109,10 @@ std::pair<int, int> getZhuyinPos(const std::string& zhuyin) {
     for (int i = 0; i < 4; ++i) {
         std::vector<std::string> parsed_zhuyin = split_utf8(ZHUYIN_KEYBOARD[i]);
 
-        auto it = std::find(parsed_zhuyin.begin(), parsed_zhuyin.end(), zhuyin);
-        if (it != parsed_zhuyin.end()) {
-            size_t pos = std::distance(parsed_zhuyin.begin(), it);
-            return {i, pos};
+        for (int pos = 0; pos < parsed_zhuyin.size(); ++pos) {
+            if (parsed_zhuyin[pos] == zhuyin) {
+                return {i, pos};
+            }
         }
     }
 

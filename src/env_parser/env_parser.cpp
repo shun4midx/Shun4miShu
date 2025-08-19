@@ -11,7 +11,13 @@
 
 // ======== FUNCTION IMPLEMENTATION ======== //
 bool contains(const std::vector<std::string>& vec, const std::string& str) {
-    return std::find(vec.begin(), vec.end(), str) != vec.end();
+    for (int i = 0; i < vec.size(); ++i) {
+        if (vec[i] == str) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 std::unordered_map<std::string, std::vector<std::string>> parseEnvFile(const std::string& path) {
