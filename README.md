@@ -38,9 +38,10 @@ BOT_USERNAME="<Your bot username including the discriminator>"
 CONFLICTING_BOTS="<Any conflicting bot username including the discriminator>"
 ```
 
-3. Type the following CMake commands:
+3. Type the following CMake commands (Make sure to install `pkg-config` first if you don't have it):
 ```cmd
 mkdir build && cd build
+cmake ..
 cmake --build . --target shun4mishu -j
 ./shun4mishu
 ```
