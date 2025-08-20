@@ -35,7 +35,7 @@ git clone https://github.com/brainboxdotcc/DPP
 BOT_TOKEN=<Your bot token>
 MESSAGE_PERMS=<Your username>,<Person 2 with message perms' username>,<etc>
 BOT_USERNAME="<Your bot username including the discriminator>"
-CONFLICTING_BOTS="<Any conflicting bot username including the discriminator>"
+CONFLICTING_BOTS="<Any conflicting bot usernames including the discriminator>,<like this>"
 ```
 
 3. Type the following CMake commands (Make sure to install `pkg-config` first if you don't have it):
